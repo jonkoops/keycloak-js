@@ -7,6 +7,9 @@
     "lint": "standard",
     "guides": "node docs/guides/guides.mjs $npm_package_version"
   },
+  "workspaces": [
+    "test"
+  ],
   "exports": {
     ".": {
       "types": "./lib/keycloak.d.ts",
