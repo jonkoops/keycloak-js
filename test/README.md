@@ -11,4 +11,11 @@ Make sure that all dependencies are installed by running the following command i
 npm install
 ```
 
+Afterwards, run the following command to install the [Playwright browsers](https://playwright.dev/docs/browsers):
+
+```sh
+npx playwright install
+```
+
+## Running the tests
 

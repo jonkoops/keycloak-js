@@ -1,6 +1,6 @@
 import type { Page } from 'playwright';
 import type { default as Keycloak, KeycloakConfig } from '../../lib/keycloak';
-import { APP_HOST } from './common.ts';
+import { APP_HOST, AUTH_SERVER_HOST } from './common.ts';
 
 export class TestExecutor {
   #isInstantiated = false;
@@ -30,14 +30,29 @@ export class TestExecutor {
   async initialize(options: any): Promise<boolean> {
     this.#assertInstantiated();
 
-    return this.#page.evaluate((options) => {
-      return ((globalThis as any).keycloak as Keycloak).init(options);
-    }, options)
+    try {
+      return await this.#page.evaluate((options) => {
+        return ((globalThis as any).keycloak as Keycloak).init(options);
+      }, options)
+    } catch {
+      return false;
+    }
   }
 
   #assertInstantiated() {
     if (!this.#isInstantiated) {
       throw new Error('The adapter is not instantiated, call the `instantiate()` first.');
     }
+  }
+
+  async waitForLoginPage() {
+    // TODO: Narrow down this selector to the login form
+    await this.#page.waitForURL(AUTH_SERVER_HOST + "/**");
+  }
+
+  async loginForm(username: string, password: string) {
+    await this.#page.getByRole('textbox', { name: 'Username or email' }).fill(username);
+    await this.#page.getByRole('textbox', { name: 'Password' }).fill(password);
+    await this.#page.getByRole('button', { name: 'Sign In' }).click();
   }
 }

@@ -9,4 +9,6 @@ test('authenticates when logging in', async ({ page }) => {
   await executor.gotoApp();
   await executor.instantiate({ url: AUTH_SERVER_HOST, realm, clientId: CLIENT_ID })
   await executor.initialize({ onLoad: 'login-required' });
+  await executor.waitForLoginPage();
+  await executor.loginForm('test', 'test');
 });
