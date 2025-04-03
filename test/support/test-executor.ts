@@ -1,7 +1,7 @@
 import type { Page } from 'playwright'
 import type Keycloak from '../../lib/keycloak.d.ts'
 import type { KeycloakConfig, KeycloakInitOptions, KeycloakLoginOptions, KeycloakLogoutOptions } from '../../lib/keycloak.d.ts'
-import { APP_HOST, AUTH_SERVER_HOST, AUTHORIZED_PASSWORD, AUTHORIZED_USERNAME, CLIENT_ID } from './common.ts'
+import { APP_URL, AUTH_SERVER_URL, AUTHORIZED_PASSWORD, AUTHORIZED_USERNAME, CLIENT_ID } from './common.ts'
 
 export class TestExecutor {
   readonly #page: Page
@@ -12,14 +12,22 @@ export class TestExecutor {
     this.#realm = realm
   }
 
-  async instantiateAdapter (config: KeycloakConfig = { url: AUTH_SERVER_HOST, realm: this.#realm, clientId: CLIENT_ID }): Promise<void> {
+  async instantiateAdapter (config: KeycloakConfig = this.getDefaultConfig()): Promise<void> {
     await this.#ensureOnAppPage()
     await this.#page.evaluate((config) => {
       (globalThis as any).keycloak = new (globalThis as any).Keycloak(config)
     }, config)
   }
 
-  async initializeAdapter (options: KeycloakInitOptions = { onLoad: 'check-sso' }): Promise<boolean> {
+  getDefaultConfig (): KeycloakConfig {
+    return {
+      url: AUTH_SERVER_URL.toString(),
+      realm: this.#realm,
+      clientId: CLIENT_ID,
+    }
+  }
+
+  async initializeAdapter (options = this.getDefaultInitOptions()): Promise<boolean> {
     await this.#ensureOnAppPage()
     await this.#ensureInstantiated()
 
@@ -46,6 +54,12 @@ export class TestExecutor {
     }
 
     return result.value ?? false
+  }
+
+  getDefaultInitOptions (): KeycloakInitOptions {
+    return {
+      onLoad: 'check-sso',
+    }
   }
 
   async submitLoginForm (username = AUTHORIZED_USERNAME, password = AUTHORIZED_PASSWORD): Promise<void> {
@@ -110,9 +124,23 @@ export class TestExecutor {
     await this.#waitForAppPage()
   }
 
+  async isAuthenticated (): Promise<boolean> {
+    await this.#assertInstantiated()
+    return await this.#page.evaluate(() => {
+      return ((globalThis as any).keycloak as Keycloak).authenticated!
+    })
+  }
+
+  async countNavigations (): Promise<number> {
+    return await this.#page.evaluate(() => {
+      // Subtract 1 because the first navigation is the initial blank tab page from Playwright.
+      return globalThis.history.length - 1
+    })
+  }
+
   async #ensureOnAppPage (): Promise<void> {
-    if (!this.#page.url().startsWith(APP_HOST)) {
-      await this.#page.goto(APP_HOST)
+    if (!this.#page.url().startsWith(APP_URL.origin)) {
+      await this.#page.goto(APP_URL.toString())
     }
   }
 
@@ -139,10 +167,10 @@ export class TestExecutor {
   }
 
   async #waitForAppPage (): Promise<void> {
-    await this.#page.waitForURL(APP_HOST + '/**')
+    await this.#page.waitForURL(APP_URL.origin + '/**')
   }
 
   async #waitForLoginPage (): Promise<void> {
-    await this.#page.waitForURL(AUTH_SERVER_HOST + '/**')
+    await this.#page.waitForURL(AUTH_SERVER_URL.origin + '/**')
   }
 }

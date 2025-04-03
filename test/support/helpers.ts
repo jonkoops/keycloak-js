@@ -1,6 +1,6 @@
 import type CredentialRepresentation from '@keycloak/keycloak-admin-client/lib/defs/credentialRepresentation.ts'
 import { adminClient } from './admin-client.ts'
-import { APP_HOST, AUTHORIZED_PASSWORD, AUTHORIZED_USERNAME, CLIENT_ID, UNAUTHORIZED_PASSWORD, UNAUTHORIZED_USERNAME } from './common.ts'
+import { APP_URL, AUTHORIZED_PASSWORD, AUTHORIZED_USERNAME, CLIENT_ID, UNAUTHORIZED_PASSWORD, UNAUTHORIZED_USERNAME } from './common.ts'
 
 export async function createTestResources (): Promise<string> {
   const { realmName } = await adminClient.realms.create({
@@ -59,8 +59,8 @@ export async function createTestResources (): Promise<string> {
     realm: realmName,
     enabled: true,
     clientId: CLIENT_ID,
-    redirectUris: [`${APP_HOST}/*`],
-    webOrigins: [APP_HOST],
+    redirectUris: [`${APP_URL.origin}/*`],
+    webOrigins: [APP_URL.origin],
     publicClient: true
   })
 

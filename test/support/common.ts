@@ -1,9 +1,10 @@
 export const ADMIN_USERNAME = 'admin'
 export const ADMIN_PASSWORD = 'admin'
-export const APP_HOST = 'http://localhost:3000'
-export const AUTH_SERVER_HOST = 'http://localhost:8080'
+export const APP_URL = new URL('http://localhost:3000')
+export const AUTH_SERVER_URL = new URL('http://localhost:8080')
 export const CLIENT_ID = 'keycloak-js-test-client'
 export const AUTHORIZED_USERNAME = 'test-user@localhost'
 export const AUTHORIZED_PASSWORD = 'password'
 export const UNAUTHORIZED_USERNAME = 'unauthorized'
 export const UNAUTHORIZED_PASSWORD = 'password'
+export const SILENT_SSO_REDIRECT_URL = new URL('./silent-check-sso.html', APP_URL)
