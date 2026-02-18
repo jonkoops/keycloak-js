@@ -8,7 +8,8 @@
     "guides": "node docs/guides/guides.mjs $npm_package_version"
   },
   "workspaces": [
-    "test"
+    "test",
+    "test-cordova"
   ],
   "exports": {
     ".": {

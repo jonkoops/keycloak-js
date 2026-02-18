@@ -1,0 +1,40 @@
+{
+  "name": "keycloak-js-test-cordova",
+  "type": "module",
+  "private": true,
+  "description": "Cordova test application for the Keycloak JS cordova-native adapter.",
+  "scripts": {
+    "setup": "node --import=tsx support/setup.ts",
+    "test": "npx playwright test",
+    "build": "npx cordova build android"
+  },
+  "dependencies": {
+    "keycloak-js": "*"
+  },
+  "devDependencies": {
+    "@keycloak/keycloak-admin-client": "^26.5.3",
+    "@playwright/test": "^1.58.1",
+    "@types/node": "^25.2.3",
+    "cordova-android": "^14.0.1",
+    "cordova-plugin-browsertab": "^0.2.0",
+    "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-deeplinks": "^1.1.1",
+    "playwright": "^1.58.1",
+    "tsx": "^4.19.0"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-browsertab": {
+        "URL_SCHEME": "keycloakjstest",
+        "DEEPLINK_HOST": "callback"
+      },
+      "cordova-plugin-deeplinks": {
+        "URL_SCHEME": "keycloakjstest",
+        "DEEPLINK_HOST": "callback"
+      }
+    },
+    "platforms": [
+      "android"
+    ]
+  }
+}
